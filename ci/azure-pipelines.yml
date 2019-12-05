@@ -55,7 +55,7 @@ jobs:
         displayName: Checkout Fabric Code
       - script: ./ci/scripts/setup_hsm.sh
         displayName: Install SoftHSM
-      - script: make unit-test
+      - script: make unit-tests
         displayName: Run Unit Tests
 
   - job: IntegrationTests
@@ -71,6 +71,5 @@ jobs:
       - checkout: self
         path: 'go/src/github.com/hyperledger/fabric'
         displayName: Checkout Fabric Code
-      - script: make integration-test
+      - script: make integration-tests
         displayName: Run Integration Tests
-
