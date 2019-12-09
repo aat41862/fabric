@@ -12,6 +12,8 @@ variables:
     value: $(Agent.BuildDirectory)/go
   - name: GOVER
     value: 1.13.4
+  - name: IS_RELEASE
+    value: true
 
 stages:
   - stage: BuildBinaries

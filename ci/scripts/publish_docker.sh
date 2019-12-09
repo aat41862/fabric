@@ -9,11 +9,17 @@ make docker
 wget -qO "$PWD/manifest-tool" https://github.com/estesp/manifest-tool/releases/download/v1.0.0/manifest-tool-linux-amd64
 chmod +x ./manifest-tool
 
-for image in baseos peer orderer ccenv tools; do
-  docker login --username "${DOCKER_USERNAME}" --password "${DOCKER_PASSWORD}"
-  docker tag "hyperledger/fabric-${image}" "hyperledger/fabric-${image}:amd64-${RELEASE}"
-  docker push "hyperledger/fabric-${image}:amd64-${RELEASE}"
+docker login -u "${DOCKER_USERNAME}" -p "${DOCKER_PASSWORD}" "${DOCKER_REGISTRY}"
 
-  ./manifest-tool push from-args --platforms linux/amd64 --template "hyperledger/fabric-${image}:amd64-${RELEASE}" --target "hyperledger/fabric-${image}:${RELEASE}"
-  ./manifest-tool push from-args --platforms linux/amd64 --template "hyperledger/fabric-${image}:amd64-${RELEASE}" --target "hyperledger/fabric-${image}:${TWO_DIGIT_RELEASE}"
+for image in baseos peer orderer ccenv tools; do
+  docker tag "hyperledger/fabric-${image}" "${DOCKER_ORG}/fabric-${image}:amd64-${RELEASE}"
+  docker push "${DOCKER_ORG}/fabric-${image}:amd64-${RELEASE}"
+
+  if [[ ${IS_RELEASE} == "true" ]]; then
+    ./manifest-tool push from-args --platforms linux/amd64 --template "${DOCKER_ORG}/fabric-${image}:amd64-${RELEASE}" --target "${DOCKER_ORG}/fabric-${image}:${RELEASE}"
+    ./manifest-tool push from-args --platforms linux/amd64 --template "${DOCKER_ORG}/fabric-${image}:amd64-${RELEASE}" --target "${DOCKER_ORG}/fabric-${image}:${RELEASE_TWO_DIGIT}"
+  else
+    docker tag "hyperledger/fabric-${image}" "${DOCKER_ORG}/fabric-${image}:amd64-latest"
+    docker push "${DOCKER_ORG}/fabric-${image}:amd64-latest"
+  fi
 done

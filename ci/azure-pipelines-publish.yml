@@ -1,0 +1,48 @@
+# Copyright IBM Corp. All Rights Reserved.
+#
+# SPDX-License-Identifier: Apache-2.0
+name: RELEASE-$(Date:yyyyMMdd)$(Rev:.rrr)
+
+trigger: none
+pr: none
+
+variables:
+  - group: Azure
+  - name: GOPATH
+    value: $(Agent.BuildDirectory)/go
+  - name: GOVER
+    value: 1.13.4
+  - name: IS_RELEASE
+    value: false
+  - name: RELEASE
+    value: 2.0.0-stable
+
+pool:
+  vmImage: 'ubuntu-18.04'
+
+jobs:
+  - job: Publish
+    steps:
+    - template: install_deps.yml
+    - checkout: self
+      path: 'go/src/github.com/hyperledger/fabric'
+      displayName: Checkout Fabric Code
+    - script: ./ci/scripts/publish_docker.sh
+      env:
+        DOCKER_USERNAME: $(ARTIFACTORY_USERNAME)
+        DOCKER_PASSWORD: $(ARTIFACTORY_PASSWORD)
+        DOCKER_ORG: "hyperledger-fabric.jfrog.io"
+        DOCKER_REGISTRY: "hyperledger-fabric.jfrog.io"
+      displayName: Build and Publish Docker Images
+    - script: make release/linux-amd64
+      displayName: Build Binary Package
+    - script: ./ci/scripts/create_binary_package.sh
+      env:
+        RELEASE: $(RELEASE)
+        TARGET: linux-amd64
+    - script: ./ci/scripts/publish_package.sh
+      env:
+        ARTIFACTORY_USERNAME: $(ARTIFACTORY_USERNAME)
+        ARTIFACTORY_PASSWORD: $(ARTIFACTORY_PASSWORD)
+        RELEASE: $(RELEASE)
+        TARGET: linux-amd64
