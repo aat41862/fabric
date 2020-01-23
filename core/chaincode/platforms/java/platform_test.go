@@ -166,7 +166,7 @@ func TestDockerBuildOptions(t *testing.T) {
 	assert.NoError(t, err, "unexpected error from DockerBuildOptions")
 
 	expectedOpts := util.DockerBuildOptions{
-		Image: "hyperledger/fabric-javaenv:latest",
+		Image: "hyperledger/fabric-javaenv:2.0",
 		Cmd:   "./build.sh",
 	}
 	assert.Equal(t, expectedOpts, opts)

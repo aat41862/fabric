@@ -17,7 +17,6 @@
 #   - orderer - builds a native fabric orderer binary
 #   - release - builds release packages for the host platform
 #   - release-all - builds release packages for all target platforms
-#   - publish-images - publishes release docker images to nexus3 or docker hub.
 #   - unit-test - runs the go-test based unit tests
 #   - verify - runs unit tests for only the changed package tree
 #   - profile - runs unit tests for all packages in coverprofile mode (slow)
@@ -38,8 +37,6 @@
 #   - unit-test-clean - cleans unit test state (particularly from docker)
 #   - basic-checks - performs basic checks like license, spelling, trailing spaces and linter
 #   - docker-thirdparty - pulls thirdparty images (kafka,zookeeper,couchdb)
-#   - docker-tag-latest - re-tags the images made by 'make docker' with the :latest tag
-#   - docker-tag-stable - re-tags the images made by 'make docker' with the :stable tag
 #   - help-docs - generate the command reference docs
 
 ALPINE_VER ?= 3.10
@@ -146,7 +143,7 @@ unit-test: unit-test-clean docker-thirdparty ccenv-docker baseos-docker
 .PHONY: unit-tests
 unit-tests: unit-test
 
-# Pull thirdparty docker images based on the latest baseimage release version
+# Pull thirdparty docker images
 # Also pull ccenv-1.4 for compatibility test to ensure pre-2.0 installed chaincodes
 # can be built by a peer configured to use the ccenv-1.4 as the builder image.
 .PHONY: docker-thirdparty
@@ -155,6 +152,7 @@ docker-thirdparty:
 	docker pull confluentinc/cp-zookeeper:${ZOOKEEPER_VER}
 	docker pull confluentinc/cp-kafka:${KAFKA_VER}
 	docker pull hyperledger/fabric-ccenv:1.4
+	docker pull hyperledger/fabric-ccenv:2.0
 
 .PHONY: verify
 verify: export JOB_TYPE=VERIFY
@@ -272,22 +270,6 @@ docker-clean: $(RELEASE_IMAGES:%=%-docker-clean)
 		[ -z "$$image" ] || docker rmi -f $$image; \
 	done
 	-@rm -rf $(BUILD_DIR)/images/$* || true
-
-.PHONY: docker-tag-latest
-docker-tag-latest: $(RELEASE_IMAGES:%=%-docker-tag-latest)
-%-docker-tag-latest:
-	docker tag $(DOCKER_NS)/fabric-$*:$(DOCKER_TAG) $(DOCKER_NS)/fabric-$*:latest
-
-.PHONY: docker-tag-stable
-docker-tag-stable: $(RELEASE_IMAGES:%=%-docker-tag-stable)
-%-docker-tag-stable:
-	docker tag $(DOCKER_NS)/fabric-$*:$(DOCKER_TAG) $(DOCKER_NS)/fabric-$*:stable
-
-.PHONY: publish-images
-publish-images: $(RELEASE_IMAGES:%=%-publish-images)
-%-publish-images:
-	@docker login $(DOCKER_HUB_USERNAME) $(DOCKER_HUB_PASSWORD)
-	@docker push $(DOCKER_NS)/fabric-$*:$(PROJECT_VERSION)
 
 .PHONY: clean
 clean: docker-clean unit-test-clean release-clean

@@ -61,7 +61,7 @@ func (c *Components) Build(path string) string {
 	return string(body)
 }
 
-const CCEnvDefaultImage = "hyperledger/fabric-ccenv:latest"
+const CCEnvDefaultImage = "hyperledger/fabric-ccenv:2.0"
 
 var RequiredImages = []string{
 	CCEnvDefaultImage,

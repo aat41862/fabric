@@ -145,7 +145,7 @@ func TestGenerateBuildOptions(t *testing.T) {
 	assert.NoError(t, err)
 
 	expectedOpts := util.DockerBuildOptions{
-		Image: "hyperledger/fabric-nodeenv:latest",
+		Image: "hyperledger/fabric-nodeenv:2.0",
 		Cmd:   expectedBuildScript,
 	}
 	assert.Equal(t, expectedOpts, opts)

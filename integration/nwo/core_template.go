@@ -168,9 +168,9 @@ chaincode:
   car:
     runtime: $(DOCKER_NS)/fabric-baseos:$(PROJECT_VERSION)
   java:
-    runtime: $(DOCKER_NS)/fabric-javaenv:latest
+    runtime: $(DOCKER_NS)/fabric-javaenv:2.0
   node:
-    runtime: $(DOCKER_NS)/fabric-nodeenv:latest
+    runtime: $(DOCKER_NS)/fabric-nodeenv:2.0
   installTimeout: 300s
   startuptimeout: 300s
   executetimeout: 30s
