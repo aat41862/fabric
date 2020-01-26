@@ -19,7 +19,6 @@ import (
 
 	"github.com/hyperledger/fabric/common/flogging"
 	"github.com/hyperledger/fabric/core/container/ccintf"
-	"github.com/hyperledger/fabric/core/peer"
 	"github.com/pkg/errors"
 )
 
@@ -269,20 +268,6 @@ type Builder struct {
 	Name         string
 }
 
-// CreateBuilders will construct builders from the peer configuration.
-func CreateBuilders(builderConfs []peer.ExternalBuilder) []*Builder {
-	var builders []*Builder
-	for _, builderConf := range builderConfs {
-		builders = append(builders, &Builder{
-			Location:     builderConf.Path,
-			Name:         builderConf.Name,
-			EnvWhitelist: builderConf.EnvironmentWhitelist,
-			Logger:       logger.Named(builderConf.Name),
-		})
-	}
-	return builders
-}
-
 // Detect runs the `detect` script.
 func (b *Builder) Detect(buildContext *BuildContext) bool {
 	detect := filepath.Join(b.Location, "bin", "detect")
@@ -341,21 +326,6 @@ type runConfig struct {
 	RootCert    string `json:"root_cert"`   // PEM encoded peer chaincode certificate
 }
 
-func newRunConfig(ccid string, peerConnection *ccintf.PeerConnection) runConfig {
-	var tlsConfig ccintf.TLSConfig
-	if peerConnection.TLSConfig != nil {
-		tlsConfig = *peerConnection.TLSConfig
-	}
-
-	return runConfig{
-		PeerAddress: peerConnection.Address,
-		CCID:        ccid,
-		ClientCert:  string(tlsConfig.ClientCert),
-		ClientKey:   string(tlsConfig.ClientKey),
-		RootCert:    string(tlsConfig.RootCert),
-	}
-}
-
 // Run starts the `run` script and returns a Session that can be used to
 // signal it and wait for termination.
 func (b *Builder) Run(ccid, bldDir string, peerConnection *ccintf.PeerConnection) (*Session, error) {
@@ -364,8 +334,20 @@ func (b *Builder) Run(ccid, bldDir string, peerConnection *ccintf.PeerConnection
 		return nil, errors.WithMessage(err, "could not create temp run dir")
 	}
 
-	rc := newRunConfig(ccid, peerConnection)
-	marshaledRC, err := json.Marshal(rc)
+	var tlsConfig ccintf.TLSConfig
+	if peerConnection.TLSConfig != nil {
+		tlsConfig = *peerConnection.TLSConfig
+	}
+
+	runConfig := runConfig{
+		PeerAddress: peerConnection.Address,
+		CCID:        ccid,
+		ClientCert:  string(tlsConfig.ClientCert),
+		ClientKey:   string(tlsConfig.ClientKey),
+		RootCert:    string(tlsConfig.RootCert),
+	}
+
+	marshaledRC, err := json.Marshal(runConfig)
 	if err != nil {
 		return nil, errors.WithMessage(err, "could not marshal run config")
 	}

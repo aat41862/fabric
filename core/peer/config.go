@@ -30,17 +30,10 @@ import (
 
 	"github.com/hyperledger/fabric/core/comm"
 	"github.com/hyperledger/fabric/core/config"
+	"github.com/hyperledger/fabric/core/container/externalbuilder"
 	"github.com/pkg/errors"
 	"github.com/spf13/viper"
 )
-
-// ExternalBuilder represents the configuration structure of
-// a chaincode external builder
-type ExternalBuilder struct {
-	EnvironmentWhitelist []string `yaml:"environmentWhitelist"`
-	Name                 string   `yaml:"name"`
-	Path                 string   `yaml:"path"`
-}
 
 // Config is the struct that defines the Peer configurations.
 type Config struct {
@@ -150,7 +143,7 @@ type Config struct {
 	// ExternalBuilders represents the builders and launchers for
 	// chaincode. The external builder detection processing will iterate over the
 	// builders in the order specified below.
-	ExternalBuilders []ExternalBuilder
+	ExternalBuilders []externalbuilder.Builder
 
 	// ----- Operations config -----
 	// TODO: create separate sub-struct for Operations config.
@@ -265,17 +258,17 @@ func (c *Config) load() error {
 	}
 
 	c.ChaincodePull = viper.GetBool("chaincode.pull")
-	var externalBuilders []ExternalBuilder
+	var externalBuilders []externalbuilder.Builder
 	err = viper.UnmarshalKey("chaincode.externalBuilders", &externalBuilders)
 	if err != nil {
 		return err
 	}
 	for _, builder := range externalBuilders {
-		if builder.Path == "" {
+		if builder.Location == "" {
 			return fmt.Errorf("invalid external builder configuration, path attribute missing in one or more builders")
 		}
 		if builder.Name == "" {
-			return fmt.Errorf("external builder at path %s has no name attribute", builder.Path)
+			return fmt.Errorf("external builder at path %s has no name attribute", builder.Location)
 		}
 	}
 	c.ExternalBuilders = externalBuilders

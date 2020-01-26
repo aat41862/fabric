@@ -540,8 +540,14 @@ func serve(args []string) error {
 		}
 	}
 
+	var externalBuilders []*externalbuilder.Builder
+	for i, builder := range coreConfig.ExternalBuilders {
+		externalBuilders = append(externalBuilders, &builder)
+		externalBuilders[i].Logger = logger.Named(builder.Name)
+	}
+
 	externalVM := &externalbuilder.Detector{
-		Builders:    externalbuilder.CreateBuilders(coreConfig.ExternalBuilders),
+		Builders:    externalBuilders,
 		DurablePath: externalBuilderOutput,
 	}
 

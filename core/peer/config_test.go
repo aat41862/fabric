@@ -16,6 +16,7 @@ import (
 	"time"
 
 	"github.com/hyperledger/fabric/core/comm"
+	"github.com/hyperledger/fabric/core/container/externalbuilder"
 	"github.com/spf13/viper"
 	"github.com/stretchr/testify/assert"
 )
@@ -279,14 +280,14 @@ func TestGlobalConfig(t *testing.T) {
 	viper.Set("metrics.statsd.prefix", "testPrefix")
 
 	viper.Set("chaincode.pull", false)
-	viper.Set("chaincode.externalBuilders", &[]ExternalBuilder{
+	viper.Set("chaincode.externalBuilders", &[]externalbuilder.Builder{
 		{
-			Path: "relative/plugin_dir",
-			Name: "relative",
+			Location: "relative/plugin_dir",
+			Name:     "relative",
 		},
 		{
-			Path: "/absolute/plugin_dir",
-			Name: "absolute",
+			Location: "/absolute/plugin_dir",
+			Name:     "absolute",
 		},
 	})
 
@@ -320,14 +321,14 @@ func TestGlobalConfig(t *testing.T) {
 		VMNetworkMode:        "TestingHost",
 
 		ChaincodePull: false,
-		ExternalBuilders: []ExternalBuilder{
+		ExternalBuilders: []externalbuilder.Builder{
 			{
-				Path: "relative/plugin_dir",
-				Name: "relative",
+				Location: "relative/plugin_dir",
+				Name:     "relative",
 			},
 			{
-				Path: "/absolute/plugin_dir",
-				Name: "absolute",
+				Location: "/absolute/plugin_dir",
+				Name:     "absolute",
 			},
 		},
 		OperationsListenAddress:         "127.0.0.1:9443",
@@ -375,7 +376,7 @@ func TestGlobalConfigDefault(t *testing.T) {
 func TestMissingExternalBuilderPath(t *testing.T) {
 	defer viper.Reset()
 	viper.Set("peer.address", "localhost:8080")
-	viper.Set("chaincode.externalBuilders", &[]ExternalBuilder{
+	viper.Set("chaincode.externalBuilders", &[]externalbuilder.Builder{
 		{
 			Name: "testName",
 		},
@@ -387,9 +388,9 @@ func TestMissingExternalBuilderPath(t *testing.T) {
 func TestMissingExternalBuilderName(t *testing.T) {
 	defer viper.Reset()
 	viper.Set("peer.address", "localhost:8080")
-	viper.Set("chaincode.externalBuilders", &[]ExternalBuilder{
+	viper.Set("chaincode.externalBuilders", &[]externalbuilder.Builder{
 		{
-			Path: "relative/plugin_dir",
+			Location: "relative/plugin_dir",
 		},
 	})
 	_, err := GlobalConfig()

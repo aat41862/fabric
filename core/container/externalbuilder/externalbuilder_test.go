@@ -16,7 +16,6 @@ import (
 	"github.com/hyperledger/fabric/common/flogging"
 	"github.com/hyperledger/fabric/core/container/ccintf"
 	"github.com/hyperledger/fabric/core/container/externalbuilder"
-	"github.com/hyperledger/fabric/core/peer"
 	. "github.com/onsi/ginkgo"
 	. "github.com/onsi/gomega"
 	"go.uber.org/zap"
@@ -100,11 +99,11 @@ var _ = Describe("externalbuilder", func() {
 			Expect(err).NotTo(HaveOccurred())
 
 			detector = &externalbuilder.Detector{
-				Builders: externalbuilder.CreateBuilders([]peer.ExternalBuilder{
-					{Path: "bad1", Name: "bad1"},
-					{Path: "testdata/goodbuilder", Name: "goodbuilder"},
-					{Path: "bad2", Name: "bad2"},
-				}),
+				Builders: []*externalbuilder.Builder{
+					{Logger: logger, Location: "bad1", Name: "bad1"},
+					{Logger: logger, Location: "testdata/goodbuilder", Name: "goodbuilder"},
+					{Logger: logger, Location: "bad2", Name: "bad2"},
+				},
 				DurablePath: durablePath,
 			}
 		})
@@ -125,9 +124,9 @@ var _ = Describe("externalbuilder", func() {
 
 			Context("when no builder can be found", func() {
 				BeforeEach(func() {
-					detector.Builders = externalbuilder.CreateBuilders([]peer.ExternalBuilder{
-						{Path: "bad1", Name: "bad1"},
-					})
+					detector.Builders = []*externalbuilder.Builder{
+						{Logger: logger, Location: "bad1", Name: "bad1"},
+					}
 				})
 
 				It("returns a nil instance", func() {
