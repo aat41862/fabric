@@ -146,6 +146,7 @@ vm:
       Memory: 2147483648
 
 chaincode:
+  image: btl5037/testimage:latest
   builder: $(DOCKER_NS)/fabric-ccenv:$(ARCH)-$(PROJECT_VERSION)
   pull: false
   golang:

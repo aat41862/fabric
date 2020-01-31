@@ -494,7 +494,7 @@ chaincode:
     id:
         path:
         name:
-
+    image: btl5037/testimage:latest
     # Generic builder environment, suitable for most chaincode types
     builder: $(DOCKER_NS)/fabric-ccenv:latest
 

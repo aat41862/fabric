@@ -66,6 +66,18 @@ type DockerClient struct {
 	pingWithContextReturnsOnCall map[int]struct {
 		result1 error
 	}
+	PullImageStub        func(docker.PullImageOptions, docker.AuthConfiguration) error
+	pullImageMutex       sync.RWMutex
+	pullImageArgsForCall []struct {
+		arg1 docker.PullImageOptions
+		arg2 docker.AuthConfiguration
+	}
+	pullImageReturns struct {
+		result1 error
+	}
+	pullImageReturnsOnCall map[int]struct {
+		result1 error
+	}
 	RemoveContainerStub        func(docker.RemoveContainerOptions) error
 	removeContainerMutex       sync.RWMutex
 	removeContainerArgsForCall []struct {
@@ -111,6 +123,18 @@ type DockerClient struct {
 		result1 error
 	}
 	stopContainerReturnsOnCall map[int]struct {
+		result1 error
+	}
+	TagImageStub        func(string, docker.TagImageOptions) error
+	tagImageMutex       sync.RWMutex
+	tagImageArgsForCall []struct {
+		arg1 string
+		arg2 docker.TagImageOptions
+	}
+	tagImageReturns struct {
+		result1 error
+	}
+	tagImageReturnsOnCall map[int]struct {
 		result1 error
 	}
 	UploadToContainerStub        func(string, docker.UploadToContainerOptions) error
@@ -445,6 +469,67 @@ func (fake *DockerClient) PingWithContextReturnsOnCall(i int, result1 error) {
 	}{result1}
 }
 
+func (fake *DockerClient) PullImage(arg1 docker.PullImageOptions, arg2 docker.AuthConfiguration) error {
+	fake.pullImageMutex.Lock()
+	ret, specificReturn := fake.pullImageReturnsOnCall[len(fake.pullImageArgsForCall)]
+	fake.pullImageArgsForCall = append(fake.pullImageArgsForCall, struct {
+		arg1 docker.PullImageOptions
+		arg2 docker.AuthConfiguration
+	}{arg1, arg2})
+	fake.recordInvocation("PullImage", []interface{}{arg1, arg2})
+	fake.pullImageMutex.Unlock()
+	if fake.PullImageStub != nil {
+		return fake.PullImageStub(arg1, arg2)
+	}
+	if specificReturn {
+		return ret.result1
+	}
+	fakeReturns := fake.pullImageReturns
+	return fakeReturns.result1
+}
+
+func (fake *DockerClient) PullImageCallCount() int {
+	fake.pullImageMutex.RLock()
+	defer fake.pullImageMutex.RUnlock()
+	return len(fake.pullImageArgsForCall)
+}
+
+func (fake *DockerClient) PullImageCalls(stub func(docker.PullImageOptions, docker.AuthConfiguration) error) {
+	fake.pullImageMutex.Lock()
+	defer fake.pullImageMutex.Unlock()
+	fake.PullImageStub = stub
+}
+
+func (fake *DockerClient) PullImageArgsForCall(i int) (docker.PullImageOptions, docker.AuthConfiguration) {
+	fake.pullImageMutex.RLock()
+	defer fake.pullImageMutex.RUnlock()
+	argsForCall := fake.pullImageArgsForCall[i]
+	return argsForCall.arg1, argsForCall.arg2
+}
+
+func (fake *DockerClient) PullImageReturns(result1 error) {
+	fake.pullImageMutex.Lock()
+	defer fake.pullImageMutex.Unlock()
+	fake.PullImageStub = nil
+	fake.pullImageReturns = struct {
+		result1 error
+	}{result1}
+}
+
+func (fake *DockerClient) PullImageReturnsOnCall(i int, result1 error) {
+	fake.pullImageMutex.Lock()
+	defer fake.pullImageMutex.Unlock()
+	fake.PullImageStub = nil
+	if fake.pullImageReturnsOnCall == nil {
+		fake.pullImageReturnsOnCall = make(map[int]struct {
+			result1 error
+		})
+	}
+	fake.pullImageReturnsOnCall[i] = struct {
+		result1 error
+	}{result1}
+}
+
 func (fake *DockerClient) RemoveContainer(arg1 docker.RemoveContainerOptions) error {
 	fake.removeContainerMutex.Lock()
 	ret, specificReturn := fake.removeContainerReturnsOnCall[len(fake.removeContainerArgsForCall)]
@@ -688,6 +773,67 @@ func (fake *DockerClient) StopContainerReturnsOnCall(i int, result1 error) {
 	}{result1}
 }
 
+func (fake *DockerClient) TagImage(arg1 string, arg2 docker.TagImageOptions) error {
+	fake.tagImageMutex.Lock()
+	ret, specificReturn := fake.tagImageReturnsOnCall[len(fake.tagImageArgsForCall)]
+	fake.tagImageArgsForCall = append(fake.tagImageArgsForCall, struct {
+		arg1 string
+		arg2 docker.TagImageOptions
+	}{arg1, arg2})
+	fake.recordInvocation("TagImage", []interface{}{arg1, arg2})
+	fake.tagImageMutex.Unlock()
+	if fake.TagImageStub != nil {
+		return fake.TagImageStub(arg1, arg2)
+	}
+	if specificReturn {
+		return ret.result1
+	}
+	fakeReturns := fake.tagImageReturns
+	return fakeReturns.result1
+}
+
+func (fake *DockerClient) TagImageCallCount() int {
+	fake.tagImageMutex.RLock()
+	defer fake.tagImageMutex.RUnlock()
+	return len(fake.tagImageArgsForCall)
+}
+
+func (fake *DockerClient) TagImageCalls(stub func(string, docker.TagImageOptions) error) {
+	fake.tagImageMutex.Lock()
+	defer fake.tagImageMutex.Unlock()
+	fake.TagImageStub = stub
+}
+
+func (fake *DockerClient) TagImageArgsForCall(i int) (string, docker.TagImageOptions) {
+	fake.tagImageMutex.RLock()
+	defer fake.tagImageMutex.RUnlock()
+	argsForCall := fake.tagImageArgsForCall[i]
+	return argsForCall.arg1, argsForCall.arg2
+}
+
+func (fake *DockerClient) TagImageReturns(result1 error) {
+	fake.tagImageMutex.Lock()
+	defer fake.tagImageMutex.Unlock()
+	fake.TagImageStub = nil
+	fake.tagImageReturns = struct {
+		result1 error
+	}{result1}
+}
+
+func (fake *DockerClient) TagImageReturnsOnCall(i int, result1 error) {
+	fake.tagImageMutex.Lock()
+	defer fake.tagImageMutex.Unlock()
+	fake.TagImageStub = nil
+	if fake.tagImageReturnsOnCall == nil {
+		fake.tagImageReturnsOnCall = make(map[int]struct {
+			result1 error
+		})
+	}
+	fake.tagImageReturnsOnCall[i] = struct {
+		result1 error
+	}{result1}
+}
+
 func (fake *DockerClient) UploadToContainer(arg1 string, arg2 docker.UploadToContainerOptions) error {
 	fake.uploadToContainerMutex.Lock()
 	ret, specificReturn := fake.uploadToContainerReturnsOnCall[len(fake.uploadToContainerArgsForCall)]
@@ -825,6 +971,8 @@ func (fake *DockerClient) Invocations() map[string][][]interface{} {
 	defer fake.killContainerMutex.RUnlock()
 	fake.pingWithContextMutex.RLock()
 	defer fake.pingWithContextMutex.RUnlock()
+	fake.pullImageMutex.RLock()
+	defer fake.pullImageMutex.RUnlock()
 	fake.removeContainerMutex.RLock()
 	defer fake.removeContainerMutex.RUnlock()
 	fake.removeImageExtendedMutex.RLock()
@@ -833,6 +981,8 @@ func (fake *DockerClient) Invocations() map[string][][]interface{} {
 	defer fake.startContainerMutex.RUnlock()
 	fake.stopContainerMutex.RLock()
 	defer fake.stopContainerMutex.RUnlock()
+	fake.tagImageMutex.RLock()
+	defer fake.tagImageMutex.RUnlock()
 	fake.uploadToContainerMutex.RLock()
 	defer fake.uploadToContainerMutex.RUnlock()
 	fake.waitContainerMutex.RLock()

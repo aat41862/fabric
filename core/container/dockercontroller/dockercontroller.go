@@ -84,6 +84,8 @@ type dockerClient interface {
 	// PingWithContext pings the docker daemon. The context object can be used
 	// to cancel the ping request.
 	PingWithContext(context.Context) error
+	PullImage(opts docker.PullImageOptions, auth docker.AuthConfiguration) error
+	TagImage(name string, opts docker.TagImageOptions) error
 	// WaitContainer blocks until the given container stops, and returns the exit
 	// code of the container status.
 	WaitContainer(containerID string) (int, error)
@@ -200,31 +202,53 @@ func (vm *DockerVM) deployImage(client dockerClient, ccid ccintf.CCID, reader io
 		return err
 	}
 
-	networkMode := getDockerHostConfig().NetworkMode
-	outputbuf := bytes.NewBuffer(nil)
-	opts := docker.BuildImageOptions{
-		Name:         id,
-		Pull:         viper.GetBool("chaincode.pull"),
-		InputStream:  reader,
-		OutputStream: outputbuf,
-		NetworkMode:  networkMode,
+	image := viper.GetString("chaincode.image")
+	if image == "" {
+		outputBuffer := bytes.NewBuffer(nil)
+		dockerImage := strings.Split(image, ":")
+		err := client.PullImage(docker.PullImageOptions{
+			Repository:   dockerImage[0],
+			Tag:          dockerImage[0],
+			OutputStream: outputBuffer,
+		}, docker.AuthConfiguration{})
+		if err != nil {
+			dockerLogger.Errorf("Error pulling chaincode image [%s]: %s", image, err)
+			dockerLogger.Errorf("Pull Output:\n********************\n%s\n********************", outputBuffer.String())
+			return err
+		}
+		err = client.TagImage(image, docker.TagImageOptions{
+			Tag: id,
+		})
+		if err != nil {
+			dockerLogger.Errorf("Error tagging chaincode image: %s", err)
+		}
+	} else {
+		networkMode := getDockerHostConfig().NetworkMode
+		outputbuf := bytes.NewBuffer(nil)
+		opts := docker.BuildImageOptions{
+			Name:         id,
+			Pull:         viper.GetBool("chaincode.pull"),
+			InputStream:  reader,
+			OutputStream: outputbuf,
+			NetworkMode:  networkMode,
+		}
+
+		startTime := time.Now()
+		err = client.BuildImage(opts)
+
+		vm.BuildMetrics.ChaincodeImageBuildDuration.With(
+			"chaincode", ccid.Name+":"+ccid.Version,
+			"success", strconv.FormatBool(err == nil),
+		).Observe(time.Since(startTime).Seconds())
+
+		if err != nil {
+			dockerLogger.Errorf("Error building image: %s", err)
+			dockerLogger.Errorf("Build Output:\n********************\n%s\n********************", outputbuf.String())
+			return err
+		}
+
+		dockerLogger.Debugf("Created image: %s", id)
 	}
-
-	startTime := time.Now()
-	err = client.BuildImage(opts)
-
-	vm.BuildMetrics.ChaincodeImageBuildDuration.With(
-		"chaincode", ccid.Name+":"+ccid.Version,
-		"success", strconv.FormatBool(err == nil),
-	).Observe(time.Since(startTime).Seconds())
-
-	if err != nil {
-		dockerLogger.Errorf("Error building image: %s", err)
-		dockerLogger.Errorf("Build Output:\n********************\n%s\n********************", outputbuf.String())
-		return err
-	}
-
-	dockerLogger.Debugf("Created image: %s", id)
 	return nil
 }
 
