@@ -314,7 +314,15 @@ func bccspHook(f reflect.Type, t reflect.Type, data interface{}) (interface{}, e
 // EnhancedExactUnmarshal is intended to unmarshal a config file into a structure
 // producing error when extraneous variables are introduced and supporting
 // the time.Duration type
+var cachedInterface interface{}
+var initialized bool
+
 func EnhancedExactUnmarshal(v *viper.Viper, output interface{}) error {
+	if initialized == true {
+		output = cachedInterface
+		fmt.Println("CACHED")
+		return nil
+	}
 	oType := reflect.TypeOf(output)
 	if oType.Kind() != reflect.Ptr {
 		return errors.Errorf("supplied output argument must be a pointer to a struct but is not pointer")
@@ -349,5 +357,8 @@ func EnhancedExactUnmarshal(v *viper.Viper, output interface{}) error {
 	if err != nil {
 		return err
 	}
-	return decoder.Decode(leafKeys)
+	keys := decoder.Decode(leafKeys)
+	cachedInterface = keys
+	initialized = true
+	return keys
 }
