@@ -31,7 +31,7 @@ import (
 	"google.golang.org/grpc/status"
 )
 
-const TimeThreshold = 100 * time.Millisecond
+const TimeThreshold = 500 * time.Millisecond
 
 var _ = Describe("Server", func() {
 	var (
