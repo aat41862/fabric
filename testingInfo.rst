@@ -6,7 +6,7 @@ Testing
 
 Unit test
 ~~~~~~~~~
-See `building Hyperledger Fabric <http://hyperledger-fabric.readthedocs.io/en/latest/dev-setup/build.html>` for unit testing instructions.
+See `building Hyperledger Fabric <http://hyperledger-fabric.readthedocs.io/en/latest/dev-setup/build.html>` for unit testing instructions.f
 
 To see coverage for a package and all sub-packages, execute the test with the ``-cover`` switch:
 
