@@ -11,7 +11,7 @@ endif
 ifneq ($(HTTP_PROXY),)
 DOCKER_BUILD_FLAGS+=--build-arg 'HTTP_PROXY=$(HTTP_PROXY)'
 endif
-ifneq ($(HTTPS_PROXY),)
+ifneq ($(HTTPS_PROXY),) 
 DOCKER_BUILD_FLAGS+=--build-arg 'HTTPS_PROXY=$(HTTPS_PROXY)'
 endif
 ifneq ($(no_proxy),)
