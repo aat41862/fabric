@@ -9,7 +9,7 @@ Maintainers
 | Artem Barger | c0rwin | c0rwin | <bartem@il.ibm.com>
 | Binh Nguyen | binhn | binhn | <binh1010010110@gmail.com>
 | Brett Logan | btl5037 | btl5037 | <brett.t.logan@ibm.com>
-| Chris Ferris | christo4ferris | cbf | <chris.ferris@gmail.com>
+| Chris Ferris | christo4ferri s | cbf | <chris.ferris@gmail.com>
 | Danny Cao | caod123 | caod | <dcao@us.ibm.com>
 | Dave Enyeart | denyeart | dave.enyeart | <enyeart@us.ibm.com>
 | Gari Singh | mastersingh24 | mastersingh24 | <gari.r.singh@gmail.com>
