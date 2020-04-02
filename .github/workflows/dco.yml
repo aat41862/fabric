@@ -1,0 +1,16 @@
+# Copyright the Hyperledger Fabric contributors. All rights reserved.
+#
+# SPDX-License-Identifier: Apache-2.0
+
+on: [push, pull_request]
+name: Check For DCO Signoff
+jobs:
+  trigger:
+    name: DCOCheck
+    runs-on: ubuntu-latest
+    steps:
+      - name: Verify DCO
+        run: .github/workflows/scripts/dco.sh
+        env:
+          AZP_TOKEN: ${{ secrets.AZP_TOKEN }}
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
