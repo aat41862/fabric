@@ -17,7 +17,7 @@ To see coverage for a package and all sub-packages, execute the test with the ``
 To see exactly which lines are not covered for a package, generate an html report with source
 code annotated by coverage:
 
-::
+::fff
 
     go test -coverprofile=coverage.out
     go tool cover -html=coverage.out -o coverage.html
