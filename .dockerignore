@@ -6,7 +6,7 @@
 
 **/*test.go
 .git/objects/pack
-.github
+.githubf
 
 # These are directories created by the make process
 bin
