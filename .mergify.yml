@@ -1,7 +1,7 @@
 # SPDX-License-Identifier: Apache-2.0
 
 pull_request_rules:
-  - name: Auto-Merge on Approving Label and Changes Limited to docs/ Folder
+  - name: Auto-Merge on Approving Label and Changes Limited fto docs/ Folder
     conditions:
       - files~=^docs/
       - -files~=^(?!^docs).*
