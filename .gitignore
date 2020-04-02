@@ -9,7 +9,7 @@
 /docs/build/*
 .DS_Store
 .*-dummy
-.gradle
+.gradle 
 .idea
 *.iml
 *.log
