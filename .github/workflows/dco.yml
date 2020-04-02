@@ -1,0 +1,43 @@
+# Copyright the Hyperledger Fabric contributors. All rights reserved.
+#
+# SPDX-License-Identifier: Apache-2.0
+
+on:
+  pull_request:
+    types: [opened, labeled]
+name: Check For DCO Signoff
+jobs:
+  trigger:
+    name: DCOCheck
+    runs-on: ubuntu-latest
+    steps:
+      - name: Verify DCO
+        run: |
+          set -x
+          declare -a needs_dco
+          pr_number=$(jq .number "${GITHUB_EVENT_PATH}")
+          repo=$(jq -r ".repository.full_name" "${GITHUB_EVENT_PATH}")
+          comment_url="https://api.github.com/repos/${repo}/issues/${pr_number}/comments"
+          commits=$(curl -u btl5037:${GITHUB_TOKEN} https://api.github.com/repos/btl5037/fabric/pulls/${pr_number}/commits)
+          index=0
+          IFS=$'\n' read -rd '' -a messages <<<"$(echo ${commits} | jq -c '.[].commit.message')" || true
+
+          for message in "${messages[@]}"; do
+             if [[ ! "${message}" =~ "Signed-off-by" ]]; then
+                  sha=$(echo ${commits} | jq -c ".[${index}].html_url" | tr -d '"')
+                  needs_dco+=("${sha}")
+             fi
+             index=$((${index} + 1))
+          done
+          if [[ ${#needs_dco[@]} -ne 0 ]]; then
+              author=$(jq pull_request.head.user.login "${GITHUB_EVENT_PATH}")
+              echo $author
+          cat <<EOF >> data.json
+          {"body":"Hyperledger Fabric requires all commits to contain a DCO signoff. The following\ncommits do not contain a proper signoff:\n\n$(printf '%s\\n' $(echo ${needs_dco[*]} | tr -s ' ' '\n'}))\n\nYou cannot add a DCO signoff using the GitHub UI. You must check out the branch\nlocally and signoff your commits using the CLI.\n\nIf you haven't cloned your Fabric fork yet, issue the following command:\n\n\`git clone https://github.com/${author}/fabric\`\n\nYou can signoff your commits by issuing the following commands:\n\n\`git fetch origin\`\n\`git checkout ${GITHUB_HEAD_REF}\`\n\`git rebase --signoff HEAD~${#needs_dco[@]}\`\n\`git push origin ${GITHUB_HEAD_REF} -f\`"}
+          EOF
+              curl -s -H "Authorization: token ${GITHUB_TOKEN}" -X POST -d @data.json "${comment_url}"
+              exit 1
+          fi
+        env:
+          AZP_TOKEN: ${{ secrets.AZP_TOKEN }}
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
