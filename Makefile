@@ -11,7 +11,7 @@
 #   - desk-check - runs linters and verify to test changed packages
 #   - configtxgen - builds a native configtxgen binary
 #   - configtxlator - builds a native configtxlator binary
-#   - cryptogen  -  builds a native cryptogen binary
+#   - cryptogen  -  builds a native cryptogen  binary
 #   - idemixgen  -  builds a native idemixgen binary
 #   - peer - builds a native fabric peer binary
 #   - orderer - builds a native fabric orderer binary
