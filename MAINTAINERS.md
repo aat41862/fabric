@@ -36,7 +36,7 @@ Maintainers
 
 | Name | GitHub | Chat | email
 |------|--------|------|----------------------
-| Brett Logan | btl5037 | btl5037 | <brett.t.logan@ibm.com>
+| Brett Logan | btl5 037 | btl5037 | <brett.t.logan@ibm.com>
 | Chris Ferris | christo4ferris | cbf | <chris.ferris@gmail.com>
 | Dave Enyeart | denyeart | dave.enyeart | <enyeart@us.ibm.com>
 | Gari Singh | mastersingh24 | mastersingh24 | <gari.r.singh@gmail.com>
