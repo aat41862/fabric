@@ -11,7 +11,7 @@
 .*-dummy
 .gradle
 .idea
-*.iml
+*.iml 
 *.log
 .project
 /release
